@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include rollon_hydraulics *.css
+recursive-include rollon_hydraulics *.csv
+recursive-include rollon_hydraulics *.html
+recursive-include rollon_hydraulics *.ico
+recursive-include rollon_hydraulics *.js
+recursive-include rollon_hydraulics *.json
+recursive-include rollon_hydraulics *.md
+recursive-include rollon_hydraulics *.png
+recursive-include rollon_hydraulics *.py
+recursive-include rollon_hydraulics *.svg
+recursive-include rollon_hydraulics *.txt
+recursive-exclude rollon_hydraulics *.pyc
