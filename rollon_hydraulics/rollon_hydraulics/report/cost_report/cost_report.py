@@ -34,7 +34,9 @@ def get_columns(filters):
 			columns.append({"fieldname": (row.name.lower()).replace(" ","_"), "label": row.name, "fieldtype": "Currency", "width": 150})
 		
 		columns.append({"fieldname": "total_cost", "label": "Total Operation Cost", "fieldtype": "Currency", "width": 150})
+		columns.append({"fieldname": "selling_rate", "label": "Selling Rate", "fieldtype": "Currency", "width": 150})
 		columns.append({"fieldname": "purchase_cost", "label": "Purchase Cost", "fieldtype": "Currency", "width": 150})
+		columns.append({"fieldname": "gross_profit", "label": "Gross Profit", "fieldtype": "Currency", "width": 150})
 
 		return columns
 
@@ -59,6 +61,7 @@ def get_data(filters):
 	elif(filters.group_by=="Item"):
 		data = frappe.db.sql("""Select soi.item_code as item,soi.rate as itemtab from `tabSales Order` as so join `tabSales Order Item` as soi 
 					on soi.parent = so.name where so.docstatus = 1 and so.transaction_date >= '{0}' and so.transaction_date <= '{1}' """.format(filters.from_date,filters.to_date),as_dict = True)
+		# print(data)
 		for row in range(0,len(data)):
 			purchase_cost=0
 			bom = frappe.db.get_value("Item",{"name":data[row].item},"default_bom")
@@ -66,6 +69,9 @@ def get_data(filters):
 				operation = frappe.db.sql("""Select o.operation , o.operating_cost from `tabBOM Operation` as o where parent = '{0}' """.format(bom),as_dict = True)
 				value = get_cost(bom,operation,data[row],{},[])
 				total=sum(value.values())
+				selling_rate=frappe.db.get_value("Sales Order Item",{"item_code":data[row].item},"rate")
+				data[row].update({"selling_rate":selling_rate})
+				data[row].update({"gross_profit":(selling_rate-total)})
 				total=total-value["purchase_cost"]
 				data[row].update(value)
 				data[row].update({"total_cost":total})	
