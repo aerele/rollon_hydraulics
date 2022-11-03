@@ -4,6 +4,8 @@
 import frappe
 from frappe import _
 
+import sys
+
 def execute(filters=None):
 	columns = get_columns(filters)
 	data = get_data(filters)
@@ -67,6 +69,7 @@ def get_data(filters):
 			bom = frappe.db.get_value("Item",{"name":data[row].item},"default_bom")
 			if bom:
 				operation = frappe.db.sql("""Select o.operation , o.operating_cost from `tabBOM Operation` as o where parent = '{0}' """.format(bom),as_dict = True)
+				sys.setrecursionlimit(150000)
 				value = get_cost(bom,operation,data[row],{},[])
 				total=sum(value.values())
 				selling_rate=frappe.db.get_value("Sales Order Item",{"item_code":data[row].item},"rate")
